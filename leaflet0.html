@@ -3,15 +3,15 @@
 <html>
 <head>
 	
-	<title>Quick Start - Leaflet</title>
+	<title>GitHub User Map</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
-	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+	<link rel="stylesheet" href="leaflet@1.0.1/dist/leaflet.css" />
+	<script src="leaflet@1.0.1/dist/leaflet.js"></script>
 
 <style>
 html, body {
@@ -20,8 +20,8 @@ html, body {
 }
 
 #mapid {
-    width: 98%;
-    height: 98%;
+    width: 100%;
+    height: 100%;
 }
 
 </style>
@@ -44,6 +44,25 @@ html, body {
 		id: 'mapbox.streets'
 	}).addTo(mymap);
 
+    var users = [
+        {"address": "Nanjing, Jiangsu, China", "username": "nettee", "location": {"lat": 32.060255, "lng": 118.796877}},
+        {"address": "Shenzhen, Guangdong, China", "username": "phodal", "location": {"lat": 22.543096, "lng": 114.057865}},
+        {"address": "Hangzhou, Zhejiang, China", "username": "JacksonTian", "location": {"lat": 30.274085, "lng": 120.15507}},
+        {"address": "Shanghai, China", "username": "Ovilia", "location": {"lat": 31.230416, "lng": 121.473701}},
+        {"address": "Hefei, Anhui, China", "username": "be5invis", "location": {"lat": 31.820592, "lng": 117.227219}},
+    ];
+
+    for (var user of users) {
+        var username = user.username;
+        var lat = user.location.lat;
+        var lng = user.location.lng;
+        var popup = '<p>' + username + '@<strong>GitHub</strong>. <a href="http://github.com/' + username + '">Go and yue him<a>.</p>';
+//        var popup = '<h4>GitHub</h4><a href="http://github.com/' 
+//            + username + '">' + username + '</a>';
+        var marker = L.marker([lat, lng], {title: username})
+            .bindPopup(popup)
+            .addTo(mymap);
+    }
 </script>
 
 
