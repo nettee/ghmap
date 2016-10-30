@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>GitHub User Map</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+	<link rel="stylesheet" href="/static/leaflet@1.0.1/dist/leaflet.css" />
+	<script src="/static/leaflet@1.0.1/dist/leaflet.js"></script>
+
+<style>
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+#mapid {
+    width: 100%;
+    height: 100%;
+}
+
+</style>
+	
+</head>
+<body>
+
+
+
+<div id="mapid"></div>
+<script>
+
+	var mymap = L.map('mapid').setView([32.04, 118.78], 6);
+
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.streets'
+	}).addTo(mymap);
+
+    fetch('/users').then(function(response) {
+        return response.json();
+    }).then(function(users) {
+        for (var user of users) {
+            var username = user.username;
+            var lat = user.location.lat;
+            var lng = user.location.lng;
+            var popup = ('<p>' 
+                + username + '@<strong>GitHub</strong>. '
+                + '<a href="http://github.com/' + username + '">去约TA<a>.'
+                + '</p>');
+            var marker = L.marker([lat, lng], {
+                    title: username,
+                    riseOnHover: true,
+                })
+                .bindPopup(popup)
+                .addTo(mymap);
+        }
+    }).catch(function(e) {
+        console.log("Oops, error");
+    });
+
+</script>
+
+
+
+</body>
+</html>
+
