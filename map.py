@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import requests
 
 import creep
@@ -13,19 +14,26 @@ def get_geocoding(location):
     result = json['results'][0]
     return (result['formatted_address'], result['geometry']['location'])
 
-def do_user(username):
-    location = creep.get_location(username)
-    if location is None:
-        return
+def do_user(user0):
+    username = user0['username']
+    location = user0['location']
     geocoding = get_geocoding(location)
-    if geocoding is None:
-        return
-    print(username, ':', geocoding[0], geocoding[1])
+    user = {
+            'username' : username,
+            'address' : geocoding[0],
+            'location' : geocoding[1],
+    }
+    return user
 
 if __name__ == '__main__':
 
-    username = 'nettee'
-    do_user(username)
-    followings = creep.get_following(username)
-    for following in followings:
-        do_user(following)
+    f = open('location.json', 'r')
+    of = open('geo.json', 'w')
+    for line in f:
+        line = line.strip('\n')
+        user = json.loads(line)
+
+        user2 = do_user(user)
+        print(json.dumps(user2))
+        print(json.dumps(user2), file=of)
+

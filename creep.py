@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import requests
 from bs4 import BeautifulSoup
 
@@ -35,15 +36,25 @@ def get_following(user):
     ]
     return following_usernames
 
+def do_user(username):
+    location = get_location(username)
+
+    user = {
+            'username' : username,
+            'location' : location,
+    }
+    return user
+
 if __name__ == '__main__':
 
     username = 'nettee'
-    location = get_location(username)
+    f = open('location.json', 'w')
 
-    print(username, ':', location)
+    user = do_user(username)
+    print(json.dumps(user), file=f)
 
     followings = get_following(username)
 
     for following in followings:
-        loc = get_location(following)
-        print(following, ':', loc)
+        following_user = do_user(following)
+        print(json.dumps(following_user), file=f)
