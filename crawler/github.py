@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from queue import Queue
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -43,18 +44,42 @@ def do_user(username):
             'username' : username,
             'location' : location,
     }
+
     return user
 
-if __name__ == '__main__':
+def crawl(output, startUser='nettee'):
 
-    username = 'nettee'
-    f = open('location.json', 'w')
+    f = open(output, 'w')
 
-    user = do_user(username)
-    print(json.dumps(user), file=f)
+    queue = Queue()
+    queue.put(startUser)
 
-    followings = get_following(username)
+    count = 0
+    while count < 20 and not queue.empty():
+        username = queue.get()
 
-    for following in followings:
-        following_user = do_user(following)
-        print(json.dumps(following_user), file=f)
+        user = do_user(username)
+        if user['location'] is not None:
+            print(json.dumps(user), file=f)
+            print(json.dumps(user))
+        count += 1
+
+        followings = get_following(username)
+        for following in followings:
+            queue.put(following)
+
+    f.close()
+
+#
+#    user = do_user(startUser)
+#    if user['location'] is not None:
+#        print(json.dumps(user), file=f)
+#        print(json.dumps(user))
+#
+#    followings = get_following(startUser)
+#
+#    for item in followings:
+#        user = do_user(item)
+#        if user['location'] is not None:
+#            print(json.dumps(user), file=f)
+#            print(json.dumps(user))
