@@ -12,24 +12,25 @@ def get_geocoding(location):
     if len(json['results']) == 0:
         return None
     result = json['results'][0]
-    return (result['formatted_address'], result['geometry']['location'])
-
-def do_user(user0):
-    username = user0['username']
-    location = user0['location']
-    geocoding = get_geocoding(location)
-    user = {
-            'username' : username,
-            'address' : geocoding[0],
-            'location' : geocoding[1],
+    return {
+        'address': result['formatted_address'],
+        'latitude': result['geometry']['location']['lat'],
+        'longtitude': result['geometry']['location']['lng'],
     }
-    return user
 
 if __name__ == '__main__':
 
     users = model.user.get_all()
     for user in users:
+        if model.geocode.exists(user.location):
+            continue
+
         print(user)
+        geocode = get_geocoding(user.location)
+        model.geocode.add(user.location,
+                geocode['address'],
+                geocode['latitude'],
+                geocode['longtitude'])
 
 #    f = open('location.json', 'r')
 #    of = open('geo.json', 'w')

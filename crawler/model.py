@@ -25,7 +25,18 @@ class User(Base):
     location = Column(String, nullable=False)
 
     def __repr__(self):
-        return "User({}({}), '{}')".format(self.username, self.fullname, self.location)
+        return "User[{}({}), '{}']".format(self.username, self.fullname, self.location)
+
+class Geocode(Base):
+    __tablename__ = 'geocodes'
+
+    location = Column(String, primary_key=True)
+    address = Column(String, nullable=False)
+    latitude = Column(Float, nullable=False)
+    longitude = Column(Float, nullable=False)
+
+    def __repr__(self):
+        return "{}: ({}, {}), {}".format(location, latitude, longitude, address)
 
 Base.metadata.create_all(engine)
 
@@ -36,6 +47,7 @@ class Nothing:
     pass
 
 user = Nothing()
+geocode = Nothing()
 
 def exists_user(username):
     return session.query(User.username).filter(User.username == username).one_or_none() is not None
@@ -53,6 +65,28 @@ def add_user(username, fullname, location):
 def get_users():
     return session.query(User).all()
 
+def exists_geocode(location):
+    return session.query(Geocode.location).filter(Geocode.location == location).one_or_none() is not None
+
+def add_geocode(location, address, latitude, longitude):
+    if exists_geocode(location):
+        return
+
+    geocode = Geocode(location=location,
+            address=address,
+            latitude=latitude,
+            longitude=longitude)
+    session.add(geocode)
+    session.commit()
+
+def get_geocodes(location):
+    return session.query(Geocode).filter(Geocode.location == location).all()
+
+
+
 user.exists = exists_user
 user.add = add_user
 user.get_all = get_users
+geocode.exists = exists_geocode
+geocode.add = add_geocode
+geocode.get_all = get_geocodes
