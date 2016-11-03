@@ -5,6 +5,8 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
+import model
+
 def get_location(user):
     res = requests.get('http://github.com/{}'.format(user))
     html = BeautifulSoup(res.text, 'lxml')
@@ -49,37 +51,26 @@ def do_user(username):
 
 def crawl(output, startUser='nettee'):
 
-    f = open(output, 'w')
-
     queue = Queue()
     queue.put(startUser)
 
     count = 0
-    while count < 20 and not queue.empty():
+    while count < 100 and not queue.empty():
         username = queue.get()
-
-        user = do_user(username)
-        if user['location'] is not None:
-            print(json.dumps(user), file=f)
-            print(json.dumps(user))
-        count += 1
-
+        print('[{}] {}'.format(count, username))
         followings = get_following(username)
         for following in followings:
             queue.put(following)
 
-    f.close()
+        count += 1
 
-#
-#    user = do_user(startUser)
-#    if user['location'] is not None:
-#        print(json.dumps(user), file=f)
-#        print(json.dumps(user))
-#
-#    followings = get_following(startUser)
-#
-#    for item in followings:
-#        user = do_user(item)
-#        if user['location'] is not None:
-#            print(json.dumps(user), file=f)
-#            print(json.dumps(user))
+        if model.exists_user(username):
+            continue
+
+        location = get_location(username)
+        if location is None:
+            continue
+
+        print('username: {}, location: {}'.format(username, location))
+        model.add_user(username, location)
+
