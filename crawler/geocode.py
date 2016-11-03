@@ -3,7 +3,7 @@
 import json
 import requests
 
-import creep
+import model
 
 def get_geocoding(location):
 
@@ -27,13 +27,17 @@ def do_user(user0):
 
 if __name__ == '__main__':
 
-    f = open('location.json', 'r')
-    of = open('geo.json', 'w')
-    for line in f:
-        line = line.strip('\n')
-        user = json.loads(line)
+    users = model.user.get_all()
+    for user in users:
+        print(user)
 
-        user2 = do_user(user)
-        print(json.dumps(user2))
-        print(json.dumps(user2), file=of)
+#    f = open('location.json', 'r')
+#    of = open('geo.json', 'w')
+#    for line in f:
+#        line = line.strip('\n')
+#        user = json.loads(line)
+#
+#        user2 = do_user(user)
+#        print(json.dumps(user2))
+#        print(json.dumps(user2), file=of)
 

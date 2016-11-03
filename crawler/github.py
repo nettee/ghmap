@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 import model
 
-def get_location(user):
+def get_information(user):
     res = requests.get('http://github.com/{}'.format(user))
     html = BeautifulSoup(res.text, 'lxml')
 
@@ -17,13 +17,16 @@ def get_location(user):
     else:
         location = None
 
-#    username_list = html.select('span[class~="vcard-username"]')
-#    if len(username_list) > 0:
-#        username = username_list[0].contents[0]
-#    else:
-#        username = None
+    fullname_list = html.select('span[class~="vcard-fullname"]')
+    if len(fullname_list) > 0 and len(fullname_list[0].contents) > 0:
+        fullname = fullname_list[0].contents[0]
+    else:
+        fullname = None
 
-    return location
+    return {
+        'location': location,
+        'fullname': fullname,
+    }
 
 def get_following(user):
     res = requests.get('https://github.com/{}?tab=following'.format(user))
@@ -38,16 +41,6 @@ def get_following(user):
             html.select('div[class~="js-repo-filter"] > div[class~="d-table"]')
     ]
     return following_usernames
-
-def do_user(username):
-    location = get_location(username)
-
-    user = {
-            'username' : username,
-            'location' : location,
-    }
-
-    return user
 
 def crawl(output, startUser='nettee'):
 
@@ -67,10 +60,12 @@ def crawl(output, startUser='nettee'):
         if model.exists_user(username):
             continue
 
-        location = get_location(username)
+        info = get_information(username)
+        fullname = info['fullname']
+        location = info['location']
         if location is None:
             continue
 
-        print('username: {}, location: {}'.format(username, location))
-        model.add_user(username, location)
+        print('username: {}, fullname: {}, location: {}'.format(username, fullname, location))
+        model.add_user(username, fullname, location)
 
