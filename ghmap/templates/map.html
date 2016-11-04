@@ -33,6 +33,7 @@ html, body {
 <div id="mapid"></div>
 <script>
 
+(function () {
 	var mymap = L.map('mapid').setView([32.04, 118.78], 6);
 
 	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
@@ -46,10 +47,11 @@ html, body {
     fetch('/users').then(function(response) {
         return response.json();
     }).then(function(users) {
+        console.log(users);
         for (var user of users) {
             var username = user.username;
-            var lat = user.location.lat;
-            var lng = user.location.lng;
+            var lat = user.latitude;
+            var lng = user.longitude;
             var popup = ('<p>' 
                 + username + '@<strong>GitHub</strong>. '
                 + '<a href="http://github.com/' + username + '">去约TA<a>.'
@@ -62,8 +64,9 @@ html, body {
                 .addTo(mymap);
         }
     }).catch(function(e) {
-        console.log("Oops, error");
+        console.log("Error:", e);
     });
+}());
 
 </script>
 
