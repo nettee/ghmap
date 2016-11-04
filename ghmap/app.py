@@ -3,6 +3,8 @@
 import json
 from flask import Flask, render_template
 
+from .. import crawler
+
 app = Flask(__name__)
 
 users = [
