@@ -7,8 +7,15 @@ class UserSpider(scrapy.Spider):
     name = 'user'
     allowed_domains = ['github.com']
 
+    def __init__(self, username=None, *args, **kwargs):
+        super(UserSpider, self).__init__(*args, **kwargs)
+        if username is None:
+            raise Exception('username is None')
+        self.username = username 
+        print('self.username =', self.username)
+
     def start_requests(self):
-        url = 'https://github.com/nettee?tab=following'
+        url = 'https://github.com/{}?tab=following'.format(self.username)
         yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
