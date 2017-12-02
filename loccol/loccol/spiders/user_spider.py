@@ -1,15 +1,15 @@
 import scrapy
 
-class LocSpider(scrapy.Spider):
+from loccol.items import UserItem
 
-    name = 'loc'
+class UserSpider(scrapy.Spider):
+
+    name = 'user'
+    allowed_domains = ['github.com']
 
     def start_requests(self):
-        urls = [
-            'https://github.com/nettee?tab=following'
-        ]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+        url = 'https://github.com/nettee?tab=following'
+        yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
 
@@ -27,13 +27,10 @@ class LocSpider(scrapy.Spider):
         location = response.xpath('//li[@aria-label="Home location"]')\
                 .xpath('span/text()')\
                 .extract_first()
-        if location is not None:
-            yield {
-                'username': username,
-                'fullname': fullname,
-                'followers': nr_follower,
-                'location': location,
-            }
+        yield UserItem(username=username,
+                fullname=fullname,
+                followers=nr_follower,
+                location=location) # location may be None
 
         for following in response.css('div.position-relative').css('div.d-table'):
             next_page = following.xpath('div[2]/a').xpath('@href').extract_first()
