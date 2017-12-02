@@ -7,7 +7,7 @@ import click
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
-from loccol.spiders.user_spider import UserSpider
+from loccol.spiders.user import UserSpider
 
 @click.command()
 @click.argument('username')
