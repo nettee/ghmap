@@ -9,6 +9,7 @@ import scrapy
 
 class UserItem(scrapy.Item):
     username = scrapy.Field()
+    order = scrapy.Field()
     linker = scrapy.Field()
     fullname = scrapy.Field()
     followers = scrapy.Field()

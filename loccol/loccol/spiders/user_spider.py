@@ -25,7 +25,7 @@ class UserSpider(scrapy.Spider):
         fullname = names.css('span.vcard-fullname').xpath('text()').extract_first()
 
         linker = response.meta.get('linker', None)
-        print('linker of {} is {}'.format(username, linker))
+        order = response.meta.get('order', 0)
 
         nr_follower = response.css('div.user-profile-nav')\
                 .xpath('nav')\
@@ -39,14 +39,20 @@ class UserSpider(scrapy.Spider):
                 .extract_first()
 
         yield UserItem(username=username,
+                order=order,
                 linker=linker,
                 fullname=fullname,
                 followers=nr_follower,
                 location=location) # location may be None
 
+        metadata = {
+            'linker': username,
+            'order': order + 1,
+        }
+
         for following in response.css('div.position-relative').css('div.d-table'):
             next_page = following.xpath('div[2]/a').xpath('@href').extract_first()
             if next_page is not None:
                 next_page = response.urljoin(next_page) + '?tab=following'
-                yield scrapy.Request(next_page, callback=self.parse, meta={'linker': username})
+                yield scrapy.Request(next_page, callback=self.parse, meta=metadata)
 
